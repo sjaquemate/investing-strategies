@@ -7,6 +7,7 @@ env:
   GCLOUD_FUNCTION_NAME: hello_world
   GCLOUD_RUNTIME: python39
   GCLOUD_REGION: europe-west1
+  GCLOUD_KEY: ${{secrets.GCP_SA_JSON}}
 
 jobs:
   build:
@@ -22,7 +23,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{env.GCLOUD_PROJECT_ID}}
-          service_account_key: ${{ secrets.KEY_JSON }}
+          service_account_key: ${{env.GCLOUD_KEY}}
           export_default_credentials: true
 
       - name: Deploy cloud function
@@ -36,6 +37,6 @@ jobs:
 
       - name: Aunthenticate the cloud function url 
         run: |
-          gcloud functions add-iam-policy-binding ${{GCLOUD_FUNCTION_NAME}} --member="allUsers" --role="roles/cloudfunctions.invoker"
+          gcloud functions add-iam-policy-binding ${{env.GCLOUD_FUNCTION_NAME}} --member="allUsers" --role="roles/cloudfunctions.invoker"
       - name: Test the cloud function url
         run: curl "${{ steps.deploy.outputs.url }}"
