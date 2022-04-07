@@ -1,5 +1,7 @@
 from flask import make_response
 
+from investing import InvestingModel
+
 
 def hello_world(request):
     """Responds to any HTTP request.
@@ -11,10 +13,10 @@ def hello_world(request):
         `make_response <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.make_response>`.
     """
     request_json = request.get_json()
-    if request.args and 'message' in request.args:
-        return make_response({'m': 'return from args'})
-    elif request_json and 'message' in request_json:
-        return make_response({'m': 'return from json'})
-    else:
-        return make_response({'echo': 'Hello World!'})
+    ticker = request_json['ticker']
+    # start_year = request_json['start_year']
+    # end_year = request_json['end_year']
     
+    investingModel = InvestingModel.InvestingModel()
+    investingModel.set_ticker(ticker)
+    return make_response( {'timeseries': investingModel.get_timeseries().tolist()} )    
