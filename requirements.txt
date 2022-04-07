@@ -1,0 +1,4 @@
+numpy==1.21.4
+pandas==1.3.3
+python_dateutil==2.8.2
+yahoo_fin==0.8.9.1
