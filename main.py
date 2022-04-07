@@ -12,9 +12,9 @@ def hello_world(request):
     """
     request_json = request.get_json()
     if request.args and 'message' in request.args:
-        return request.args.get('message')
+        return make_response({'m': 'return from args'})
     elif request_json and 'message' in request_json:
-        return request_json['message']
+        return make_response({'m': 'return from json'})
     else:
         return make_response({'echo': 'Hello World!'})
     

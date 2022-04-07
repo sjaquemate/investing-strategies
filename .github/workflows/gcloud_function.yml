@@ -32,8 +32,8 @@ jobs:
           project_id: ${{env.GCLOUD_PROJECT_ID}}
           region: europe-west1
 
-      - name: Aunthenticate the cloud function url 
-        run: |
-          gcloud functions add-iam-policy-binding ${{env.GCLOUD_FUNCTION_NAME}} --member="allUsers" --role="roles/cloudfunctions.invoker"
-      - name: Test the cloud function url
-        run: curl "${{ steps.deploy.outputs.url }}"
+      # - name: Aunthenticate the cloud function url 
+      #   run: |
+      #     gcloud functions add-iam-policy-binding ${{env.GCLOUD_FUNCTION_NAME}} --member="allUsers" --role="roles/cloudfunctions.invoker"
+      # - name: Test the cloud function url
+      #   run: curl "${{ steps.deploy.outputs.url }}"
