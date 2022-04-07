@@ -3,7 +3,7 @@ on:
   push:
     branches: [ main ]
 env:
-  GCLOUD_PROJECT_ID: indigo-history-346510
+  GCLOUD_PROJECT_ID: investing-strategies-346514
   GCLOUD_FUNCTION_NAME: hello_world
   GCLOUD_RUNTIME: python39
   GCLOUD_REGION: europe-west1
