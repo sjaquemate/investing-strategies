@@ -17,6 +17,6 @@ def hello_world(request):
     # start_year = request_json['start_year']
     # end_year = request_json['end_year']
     
-    investingModel = InvestingModel.InvestingModel()
+    investingModel = InvestingModel()
     investingModel.set_ticker(ticker)
     return make_response( {'timeseries': investingModel.get_timeseries().tolist()} )    
