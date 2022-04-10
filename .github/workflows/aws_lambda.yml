@@ -1,0 +1,23 @@
+name: Deploy Lambda Function 
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    environment: 'aws-credentials'
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Deploy code to Lambda
+      uses: mariamrf/py-lambda-action@v1.0.0
+      with:
+        lambda_layer_arn: '199287058268:function:investing-strategies-function'
+        lambda_function_name: 'investing-strategies-function'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'eu-central-1'
