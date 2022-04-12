@@ -1,0 +1,56 @@
+name: AWS Docker Deployment 
+
+on:
+  push: 
+    branches:
+      - main
+
+env:
+  REPO_NAME: investing-strategies-repo
+  AWS_ECR_PREFIX: 199287058268.dkr.ecr.eu-central-1
+  FUNCTION_NAME: investing-strategies-function
+
+jobs:
+  
+  aws-docker-deployment:
+    environment: 'AWS_CREDENTIALS'  # where secrets are stored
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+
+    - name: Build container
+      run: |
+        docker build --tag ${{ env.REPO_NAME }}:latest .
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+
+    - name: Authenticate the Docker CLI to your Amazon ECR registry
+      run: |
+        aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ env.AWS_ECR_PREFIX }}.amazonaws.com    
+    
+    - name: Create a repository (if it doesnt exist) in Amazon ECR using the create-repository command
+      run: |
+        aws ecr describe-repositories --repository-names ${{ env.REPO_NAME }} || aws ecr create-repository --repository-name ${{ env.REPO_NAME }} --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
+    
+    - name: Tag your image to match your repository name, and deploy the image to Amazon ECR using the docker push command
+      run: |
+        docker tag  ${{ env.REPO_NAME }}:latest ${{ env.AWS_ECR_PREFIX }}.amazonaws.com/${{ env.REPO_NAME }}:latest
+        docker push ${{ env.AWS_ECR_PREFIX }}.amazonaws.com/${{ env.REPO_NAME }}:latest
+
+    - name: Update image to lambda function (just updating, not creating from scratch (todo?))
+      run: |
+        aws lambda update-function-code --region eu-central-1 --function-name ${{ env.FUNCTION_NAME }} --image-uri ${{ env.AWS_ECR_PREFIX }}.amazonaws.com/${{ env.REPO_NAME }}:latest  
