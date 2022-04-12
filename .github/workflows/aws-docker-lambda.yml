@@ -57,4 +57,4 @@ jobs:
 
     - name: Set timeout and memory uses
       run: |
-        update-function-configuration --timeout 60 --memory-size 512 --function-name ${{ env.FUNCTION_NAME }}
+        aws lambda update-function-configuration --timeout 60 --memory-size 512 --function-name ${{ env.FUNCTION_NAME }}
