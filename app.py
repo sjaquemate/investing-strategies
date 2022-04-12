@@ -3,9 +3,11 @@ import json
 
 def handler(event, context):
 
-    query_string_parameters = event["queryStringParameters"]
 
     def get_query_parameter(param: str):
+        query_string_parameters = event["queryStringParameters"]
+        if query_string_parameters is None:
+            raise AssertionError(f'querystring does not contain any parameters')
         if param not in query_string_parameters:
             raise AssertionError(
                 f'querystring must contain a {param} parameter')
@@ -24,7 +26,7 @@ def handler(event, context):
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             },
-            'body': json.dumps({'message': str(e)})
+            'body': json.dumps({'error': str(e)})
         }
 
     response = {
@@ -55,9 +57,9 @@ def main():
     }}
     
     # todo make these into tests
+    print(handler({'queryStringParameters': None}, {}))
     print(handler({'queryStringParameters': {}}, {}))
     print(handler(event, {}))
-    
 
 
 if __name__ == "__main__":
