@@ -51,10 +51,10 @@ jobs:
         docker tag  ${{ env.REPO_NAME }}:latest ${{ env.AWS_ECR_PREFIX }}.amazonaws.com/${{ env.REPO_NAME }}:latest
         docker push ${{ env.AWS_ECR_PREFIX }}.amazonaws.com/${{ env.REPO_NAME }}:latest
 
-    - name: Update image to lambda function (just updating, not creating from scratch (todo?))
-      run: |
-        aws lambda update-function-code --region eu-central-1 --function-name ${{ env.FUNCTION_NAME }} --image-uri ${{ env.AWS_ECR_PREFIX }}.amazonaws.com/${{ env.REPO_NAME }}:latest  
-
     - name: Set timeout and memory uses
       run: |
         aws lambda update-function-configuration --timeout 60 --memory-size 512 --function-name ${{ env.FUNCTION_NAME }}
+
+    - name: Update image to lambda function (just updating, not creating from scratch (todo?))
+      run: |
+        aws lambda update-function-code --region eu-central-1 --function-name ${{ env.FUNCTION_NAME }} --image-uri ${{ env.AWS_ECR_PREFIX }}.amazonaws.com/${{ env.REPO_NAME }}:latest  
