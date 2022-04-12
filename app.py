@@ -1,4 +1,7 @@
 import json
+import investing 
+import strategies 
+from dateutil.relativedelta import relativedelta
 
 
 def handler(event, context):
@@ -28,12 +31,25 @@ def handler(event, context):
             },
             'body': json.dumps({'error': str(e)})
         }
-
-    response = {
-        'ticker': ticker,
-        'start_year': start_year,
-        'end_year': end_year,
-        'investing_years': investing_years,
+    
+    investingModel = investing.InvestingModel()
+    investingModel.set_ticker(ticker)  # S&P500
+    investingModel.set_interval_years(start_year, end_year)
+    timeseries = investingModel.get_timeseries()
+    gains = investingModel.calculate_distribution(strategy_fn=strategies.lump_sum_gain,
+                                                  investing_duration=relativedelta(years=5),
+                                                  buy_period=relativedelta(months=2))
+    
+    response = {}
+    response['timeseries'] = {
+        'dates': timeseries.index.astype(str).tolist(),
+        'values': timeseries.values.tolist(),
+    }
+    
+    dates = [str(start) + ' ' + str(end) for start, end in gains.index]
+    response['gains'] = {
+        'dates': dates,
+        'values': gains.values.tolist(),
     }
 
     return {
@@ -45,3 +61,12 @@ def handler(event, context):
         },
         'body': json.dumps(response)
     }
+    
+if __name__ == "__main__":
+    event = {'queryStringParameters': {
+        'ticker': "AAPL",
+        'start_year': "2000",
+        'end_year': "2010",
+        'investing_years': "5",
+    }}
+    print( handler(event, {}) )
