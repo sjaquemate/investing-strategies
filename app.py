@@ -57,6 +57,7 @@ def handler(event, context):
         'dates': dates,
         'values': gains.values.tolist(),
     }
+    response['event'] = event
 
     return {
         'statusCode': 200,
