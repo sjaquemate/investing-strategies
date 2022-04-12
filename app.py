@@ -24,7 +24,7 @@ def handler(event, context):
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             },
-            'body': e
+            'body': json.dumps({'message': str(e)})
         }
 
     response = {
@@ -45,7 +45,6 @@ def handler(event, context):
     }
 
 
-# todo make these into tests
 def main():
     """ test handler input handling """
     event = {'queryStringParameters': {
@@ -54,6 +53,8 @@ def main():
         'end_year': "2021",
         'investing_years': "5",
     }}
+    
+    # todo make these into tests
     print(handler({'queryStringParameters': {}}, {}))
     print(handler(event, {}))
     
