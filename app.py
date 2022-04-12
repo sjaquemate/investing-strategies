@@ -33,10 +33,7 @@ def handler(event, context):
             },
             'body': json.dumps({'error': str(e)})
         }
-    
-    ticker = 'MSFT'
-    investing_years=1
-    
+        
     
     investingModel = investing.InvestingModel()
     investingModel.set_ticker(ticker)
@@ -47,17 +44,16 @@ def handler(event, context):
                                                   buy_period=relativedelta(months=1))
     
     response = {}
-    # response['timeseries'] = {
-    #     'dates': timeseries.index.astype(str).tolist(),
-    #     'values': timeseries.values.tolist(),
-    # }
-    
+    response['timeseries'] = {
+        'dates': timeseries.index.astype(str).tolist(),
+        'values': timeseries.values.tolist(),
+    }
     dates = [str(start) + ' ' + str(end) for start, end in gains.index]
     response['gains'] = {
         'dates': dates,
         'values': gains.values.tolist(),
     }
-    response['event'] = event
+    # response['event'] = event
 
     return {
         'statusCode': 200,
