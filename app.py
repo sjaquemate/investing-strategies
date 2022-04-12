@@ -45,22 +45,3 @@ def handler(event, context):
         },
         'body': json.dumps(response)
     }
-
-
-def main():
-    """ test handler input handling """
-    event = {'queryStringParameters': {
-        'ticker': "AAPL",
-        'start_year': "2000",
-        'end_year': "2021",
-        'investing_years': "5",
-    }}
-    
-    # todo make these into tests
-    print(handler({'queryStringParameters': None}, {}))
-    print(handler({'queryStringParameters': {}}, {}))
-    print(handler(event, {}))
-
-
-if __name__ == "__main__":
-    main()
