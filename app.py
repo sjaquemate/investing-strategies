@@ -11,10 +11,21 @@ def handler(event, context):
                 f'querystring must contain a {param} parameter')
         return query_string_parameters[param]
 
-    ticker = get_query_parameter('ticker')
-    start_year = int(get_query_parameter('start_year'))
-    end_year = int(get_query_parameter('end_year'))
-    investing_years = int(get_query_parameter('investing_years'))
+    try:
+        ticker = get_query_parameter('ticker')
+        start_year = int(get_query_parameter('start_year'))
+        end_year = int(get_query_parameter('end_year'))
+        investing_years = int(get_query_parameter('investing_years'))
+    except AssertionError as e:
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            'body': e
+        }
 
     response = {
         'ticker': ticker,
@@ -34,6 +45,7 @@ def handler(event, context):
     }
 
 
+# todo make these into tests
 def main():
     """ test handler input handling """
     event = {'queryStringParameters': {
@@ -42,7 +54,10 @@ def main():
         'end_year': "2021",
         'investing_years': "5",
     }}
+    print(handler({'queryStringParameters': {}}, {}))
     print(handler(event, {}))
+    
+
 
 if __name__ == "__main__":
     main()
