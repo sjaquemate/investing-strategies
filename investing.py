@@ -19,7 +19,8 @@ class Stock:
     @classmethod
     def from_ticker(cls, ticker):
         # set monthly price excluding the last month
-        monthly_price = si.get_data(ticker, start_date=datetime(1900, 1, 1), interval="1mo")['open'][:-1]  
+        data = si.get_data(ticker, start_date=datetime(1900, 1, 1), interval="1mo")
+        monthly_price = data['open'][:-1]  
         return cls(ticker, monthly_price)
     
 
@@ -84,6 +85,9 @@ class InvestingModel:
 
         self.stock = Stock.from_ticker(ticker)
 
+    def get_stockname(self) -> str:
+        return ''
+    
     def get_timeseries(self) -> pd.Series:
         return self.stock.monthly_price
 

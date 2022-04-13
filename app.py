@@ -38,22 +38,29 @@ def handler(event, context):
     investingModel = investing.InvestingModel()
     investingModel.set_ticker(ticker)
     investingModel.set_interval_years(start_year, end_year)
-    timeseries = investingModel.get_timeseries()
-    gains = investingModel.calculate_distribution(strategy_fn=strategies.lump_sum_gain,
-                                                  investing_duration=relativedelta(years=investing_years),
-                                                  buy_period=relativedelta(months=1))
     
+    timeseries = investingModel.get_timeseries()
+    
+
     response = {}
     response['timeseries'] = {
         'dates': timeseries.index.astype(str).tolist(),
         'values': timeseries.values.tolist(),
     }
-    dates = [str(start) + ' ' + str(end) for start, end in gains.index]
-    response['gains'] = {
-        'dates': dates,
-        'values': gains.values.tolist(),
-    }
-    # response['event'] = event
+    
+    response['gains'] = []
+    
+    for strategy_name, strategy_fn in strategies.strategies.items():  
+        gains = investingModel.calculate_distribution(strategy_fn=strategy_fn,
+                                                investing_duration=relativedelta(years=investing_years),
+                                                buy_period=relativedelta(months=1))
+          
+        dates = [str(start) + ' ' + str(end) for start, end in gains.index]
+        response['gains'].append({
+            'strategy_name': strategy_name,
+            'dates': dates,
+            'values': gains.values.tolist(),
+        })
 
     return {
         'statusCode': 200,

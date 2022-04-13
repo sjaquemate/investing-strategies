@@ -11,3 +11,7 @@ def equal_stock_gain(data: pd.Series):
 
 def dca_gain(data: pd.Series):
     return sum(1 / data) * data[-1] / len(data)
+
+strategies = {'lumpsum': lump_sum_gain,
+              'equalshare': equal_stock_gain,
+              'dca': dca_gain}

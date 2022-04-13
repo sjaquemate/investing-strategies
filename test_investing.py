@@ -5,7 +5,6 @@ import strategies
 
 investingModel = investing.InvestingModel()
 
-
 def test_timeseries():
     investingModel.set_ticker('AAPL')  # Apple
     timeseries = investingModel.get_timeseries()
