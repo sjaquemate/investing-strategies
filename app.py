@@ -57,7 +57,7 @@ def handler(event, context):
           
         dates = [str(start) + ' ' + str(end) for start, end in gains.index]
         response['gains'].append({
-            'strategy_name': strategy_name,
+            'strategyName': strategy_name,
             'dates': dates,
             'values': gains.values.tolist(),
         })
