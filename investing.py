@@ -57,6 +57,8 @@ def calculate_strategy_gains(data: pd.Series, interval: Interval, strategy_fn: s
     """ calculated the fractional realized gains given a certain strategy function in a 
     certain investing_period
     """
+    interval = Interval( max(interval.begin, data.index.min()),
+                         min(interval.end, data.index.max()))  # don't calculate more than is available
     subintervals = split_into_subintervals(interval, investing_duration)
 
     gains = []
@@ -94,8 +96,7 @@ class InvestingModel:
     def calculate_distribution(self, 
                                strategy_fn: strategies.strategy_fn, 
                                investing_duration: relativedelta, 
-                               buy_period: relativedelta,
-                               as_percentage=False, yearly=False):
+                               buy_period: relativedelta):
         
         if self.stock is None:
             raise AssertionError("Please set a stock using set_ticker(...)")
@@ -106,10 +107,5 @@ class InvestingModel:
         gains = calculate_strategy_gains(self.stock.monthly_price, self.interval, strategy_fn,
                                              buy_period=buy_period,
                                              investing_duration=investing_duration)
-        if yearly:
-            gains = gains ** (1 / investing_duration.years)
-
-        if as_percentage:
-            return (gains-1)*100
 
         return gains

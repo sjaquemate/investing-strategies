@@ -75,8 +75,8 @@ def handler(event, context):
 if __name__ == "__main__":
     event = {'queryStringParameters': {
         'ticker': "AAPL",
-        'start_year': "2000",
-        'end_year': "2010",
+        'start_year': "1900",
+        'end_year': "2030",
         'investing_years': "5",
     }}
     print( handler(event, {}) )
