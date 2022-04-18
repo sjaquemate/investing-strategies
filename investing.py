@@ -1,10 +1,10 @@
 import pandas as pd
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
 from dataclasses import dataclass
 import yahoo_fin.stock_info as si
 from typing import List, Union 
 import strategies 
+import numpy as np 
 
 @dataclass
 class Interval:
@@ -24,8 +24,8 @@ class Stock:
         return cls(ticker, monthly_price)
     
 
-def split_into_subintervals(interval: Interval, duration: relativedelta,
-                           increment: relativedelta=relativedelta(months=1)) -> List[Interval]:
+def split_into_subintervals(interval: Interval, duration: timedelta,
+                           increment: timedelta=timedelta(days=30.437)) -> List[Interval]:
     """ split and interval into subintervals of certain durations,
     e.g: interval: (2000, 2005), duration: 1 year, increment: 1 month ->
          [(jan 2000, jan 2001), (feb 2000, feb 2001), ..., (dec 2003, dec 2004)]
@@ -39,21 +39,16 @@ def split_into_subintervals(interval: Interval, duration: relativedelta,
     return subintervals
 
 
-def select_periodic_data(data: pd.DataFrame, interval: Interval, period: relativedelta):
+def select_periodic_data(data: pd.DataFrame, interval: Interval, period: timedelta):
     """ select the closest valid stock dates for periodic dates between an interval """
-    dates = []
-    date = interval.begin
-    while date <= interval.end:
-        dates.append(date)
-        date += period
-
+    dates = np.arange(interval.begin, interval.end, period)
     closest_indices = data.index.searchsorted(dates)
     return data.iloc[closest_indices]
 
 
 
 def calculate_strategy_gains(data: pd.Series, interval: Interval, strategy_fn: strategies.strategy_fn,
-                             buy_period: relativedelta, investing_duration: relativedelta) -> pd.Series:
+                             buy_period: timedelta, investing_duration: timedelta) -> pd.Series:
     """ calculated the fractional realized gains given a certain strategy function in a 
     certain investing_period
     """
@@ -95,8 +90,8 @@ class InvestingModel:
 
     def calculate_distribution(self, 
                                strategy_fn: strategies.strategy_fn, 
-                               investing_duration: relativedelta, 
-                               buy_period: relativedelta):
+                               investing_duration: timedelta, 
+                               buy_period: timedelta):
         
         if self.stock is None:
             raise AssertionError("Please set a stock using set_ticker(...)")

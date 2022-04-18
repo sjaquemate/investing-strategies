@@ -1,8 +1,11 @@
 import json
 import investing 
 import strategies 
-from dateutil.relativedelta import relativedelta
+from datetime import timedelta 
+import pandas as pd 
 
+def to_unix_timestamp(dates):
+    return ((dates - pd.Timestamp("1970-01-01")) // pd.Timedelta('1s')).tolist()
 
 def handler(event, context):
 
@@ -23,6 +26,7 @@ def handler(event, context):
         start_year = int(get_query_parameter('start_year'))
         end_year = int(get_query_parameter('end_year'))
         investing_years = int(get_query_parameter('investing_years'))
+    
     except AssertionError as e:
         return {
             'statusCode': 400,
@@ -44,7 +48,7 @@ def handler(event, context):
 
     response = {}
     response['timeseries'] = {
-        'dates': timeseries.index.astype(str).tolist(),
+        'dates': to_unix_timestamp(timeseries.index),
         'values': timeseries.values.tolist(),
     }
     
@@ -52,8 +56,8 @@ def handler(event, context):
     
     for strategy_name, strategy_fn in strategies.strategies.items():  
         gains = investingModel.calculate_distribution(strategy_fn=strategy_fn,
-                                                investing_duration=relativedelta(years=investing_years),
-                                                buy_period=relativedelta(months=1))
+                                                investing_duration=timedelta(days=365.25*investing_years),
+                                                buy_period=timedelta(days=30.437))
           
         dates = [str(start) + ' ' + str(end) for start, end in gains.index]
         response['gains'].append({
@@ -77,6 +81,6 @@ if __name__ == "__main__":
         'ticker': "AAPL",
         'start_year': "1900",
         'end_year': "2030",
-        'investing_years': "5",
+        'investing_years': "1",
     }}
     print( handler(event, {}) )
